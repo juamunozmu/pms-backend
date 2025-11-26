@@ -26,7 +26,12 @@ app.add_middleware(
 )
 
 # Include API routers
-# app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
+from app.api.routes.v1.auth import auth_routes
+app.include_router(auth_routes.router, prefix="/api/v1")
+
+from app.api.routes.v1.expenses import expense_routes
+app.include_router(expense_routes.router, prefix="/api/v1")
+
 # app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 # app.include_router(parking.router, prefix="/api/v1/parking", tags=["Parking"])
 # app.include_router(washing.router, prefix="/api/v1/washing", tags=["Washing"])
