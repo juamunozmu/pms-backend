@@ -3,6 +3,9 @@ from dataclasses import dataclass
 @dataclass
 class Washer:
     id: int | None
-    name: str
-    bonus_percentage: float
-    active: bool
+    full_name: str
+    email: str
+    phone: str | None
+    commission_percentage: int
+    is_active: bool = True
+    password_hash: str | None = None
