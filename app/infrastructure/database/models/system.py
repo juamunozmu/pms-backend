@@ -1,7 +1,8 @@
 """
 Modelos SQLAlchemy para configuración del sistema, auditoría y notificaciones.
 """
-from sqlalchemy import Column, Integer, String, Text, Boolean, TIMESTAMP, Index, CheckConstraint
+from sqlalchemy import Column, Integer, String, Text, Boolean, TIMESTAMP, Index, CheckConstraint, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from . import Base
 
@@ -18,8 +19,12 @@ class BusinessConfig(Base):
     description = Column(String(255), nullable=True)
     data_type = Column(String(20), default="string")  # string, integer, boolean, json
     is_active = Column(Boolean, default=True)
+    updated_by = Column(Integer, ForeignKey("global_admins.id", ondelete="RESTRICT"), nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    
+    # Relaciones
+    admin = relationship("GlobalAdmin", back_populates="business_configs")
     
     # Constraints
     __table_args__ = (
@@ -99,6 +104,8 @@ class FinancialReport(Base):
     id = Column(Integer, primary_key=True, index=True)
     report_type = Column(String(50), nullable=False, index=True)  # daily, weekly, monthly, yearly
     report_date = Column(TIMESTAMP(timezone=True), nullable=False, index=True)
+    generated_by = Column(Integer, ForeignKey("global_admins.id", ondelete="RESTRICT"), nullable=False)
+    shift_id = Column(Integer, ForeignKey("shifts.id", ondelete="SET NULL"), nullable=True)
     total_income = Column(Integer, default=0)  # En centavos
     total_expenses = Column(Integer, default=0)  # En centavos
     net_profit = Column(Integer, default=0)  # En centavos
@@ -108,6 +115,10 @@ class FinancialReport(Base):
     report_data = Column(Text, nullable=True)  # JSON con detalles adicionales
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    
+    # Relaciones
+    admin = relationship("GlobalAdmin", back_populates="financial_reports")
+    shift = relationship("Shift", back_populates="financial_reports")
     
     # Índices
     __table_args__ = (

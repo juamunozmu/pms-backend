@@ -30,6 +30,9 @@ class Shift(Base):
     admin = relationship("OperationalAdmin", back_populates="shifts")
     expenses = relationship("Expense", back_populates="shift", cascade="all, delete-orphan")
     bonuses = relationship("Bonus", back_populates="shift", cascade="all, delete-orphan")
+    washing_services = relationship("WashingService", back_populates="shift")
+    parking_records = relationship("ParkingRecord", back_populates="shift")
+    financial_reports = relationship("FinancialReport", back_populates="shift")
     
     # Constraints
     __table_args__ = (

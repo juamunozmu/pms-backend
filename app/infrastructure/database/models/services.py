@@ -45,6 +45,8 @@ class WashingService(Base):
     vehicle_id = Column(Integer, ForeignKey("vehicles.id", ondelete="CASCADE"), nullable=False, index=True)
     parking_record_id = Column(Integer, ForeignKey("parking_records.id", ondelete="CASCADE"), nullable=True, unique=True)
     washer_id = Column(Integer, ForeignKey("washers.id", ondelete="RESTRICT"), nullable=True)
+    shift_id = Column(Integer, ForeignKey("shifts.id", ondelete="RESTRICT"), nullable=False, index=True)
+    admin_id = Column(Integer, ForeignKey("operational_admins.id", ondelete="RESTRICT"), nullable=False, index=True)
     service_type = Column(String(50), nullable=False)  # Básico, Completo, Premium
     service_date = Column(TIMESTAMP(timezone=True), nullable=False, index=True)
     price = Column(Integer, nullable=False)  # En centavos
@@ -57,6 +59,8 @@ class WashingService(Base):
     vehicle = relationship("Vehicle", back_populates="washing_services")
     parking_record = relationship("ParkingRecord", foreign_keys=[parking_record_id])
     washer = relationship("Washer", back_populates="washing_services")
+    shift = relationship("Shift", back_populates="washing_services")
+    admin = relationship("OperationalAdmin", back_populates="washing_services")
     
     # Constraints
     __table_args__ = (

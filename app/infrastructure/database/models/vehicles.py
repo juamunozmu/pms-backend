@@ -50,11 +50,15 @@ class ParkingRecord(Base):
     # Columnas
     id = Column(Integer, primary_key=True, index=True)
     vehicle_id = Column(Integer, ForeignKey("vehicles.id", ondelete="CASCADE"), nullable=False, index=True)
+    shift_id = Column(Integer, ForeignKey("shifts.id", ondelete="RESTRICT"), nullable=False, index=True)
+    admin_id = Column(Integer, ForeignKey("operational_admins.id", ondelete="RESTRICT"), nullable=False, index=True)
     entry_time = Column(TIMESTAMP(timezone=True), nullable=False, index=True)
     exit_time = Column(TIMESTAMP(timezone=True), nullable=True)
     parking_rate_id = Column(Integer, ForeignKey("rates.id", ondelete="RESTRICT"), nullable=False)
     subscription_id = Column(Integer, ForeignKey("monthly_subscriptions.id", ondelete="SET NULL"), nullable=True)
     washing_service_id = Column(Integer, ForeignKey("washing_services.id", ondelete="SET NULL"), nullable=True)
+    helmet_count = Column(Integer, default=0)
+    helmet_charge = Column(Integer, default=0)  # En centavos
     total_cost = Column(Integer, default=0)  # En centavos
     payment_status = Column(String(20), default="pending")  # pending, paid, cancelled
     notes = Column(String(255), nullable=True)
@@ -66,6 +70,8 @@ class ParkingRecord(Base):
     rate = relationship("Rate", back_populates="parking_records")
     subscription = relationship("MonthlySubscription", back_populates="parking_records")
     washing_service = relationship("WashingService", foreign_keys=[washing_service_id])
+    shift = relationship("Shift", back_populates="parking_records")
+    admin = relationship("OperationalAdmin", back_populates="parking_records")
     
     # Constraints
     __table_args__ = (

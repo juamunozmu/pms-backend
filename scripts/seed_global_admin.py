@@ -13,8 +13,13 @@ async def seed_admin():
     async with SessionLocal() as session:
         # Check if exists
         result = await session.execute(select(GlobalAdmin).where(GlobalAdmin.email == "admin@pms.com"))
-        if result.scalar_one_or_none():
-            print("Admin already exists")
+        admin = result.scalar_one_or_none()
+        if admin:
+            print("Admin already exists. Updating password...")
+            admin.password_hash = get_password_hash("admin123")
+            session.add(admin)
+            await session.commit()
+            print("Global Admin password updated: admin@pms.com / admin123")
             return
 
         admin = GlobalAdmin(

@@ -21,7 +21,7 @@ class LoginGlobalAdmin:
         if admin.id:
             await self.repo.update_last_login(admin.id)
             
-        access_token = create_access_token(subject=admin.id)
+        access_token = create_access_token(subject=admin.id, additional_claims={"role": "global_admin"})
         return TokenResponse(
             access_token=access_token,
             token_type="bearer",

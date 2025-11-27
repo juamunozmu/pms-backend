@@ -23,6 +23,10 @@ class GlobalAdmin(Base):
     updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     last_login = Column(TIMESTAMP(timezone=True), nullable=True)
     
+    # Relaciones
+    business_configs = relationship("BusinessConfig", back_populates="admin")
+    financial_reports = relationship("FinancialReport", back_populates="admin")
+    
     def __repr__(self):
         return f"<GlobalAdmin(id={self.id}, email='{self.email}')>"
 
@@ -45,6 +49,8 @@ class OperationalAdmin(Base):
     
     # Relaciones
     shifts = relationship("Shift", back_populates="admin", cascade="all, delete-orphan")
+    washing_services = relationship("WashingService", back_populates="admin")
+    parking_records = relationship("ParkingRecord", back_populates="admin")
     
     def __repr__(self):
         return f"<OperationalAdmin(id={self.id}, email='{self.email}')>"
