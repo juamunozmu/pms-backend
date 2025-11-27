@@ -6,7 +6,8 @@ from app.domain.washers.use_cases.get_washer import GetWasher
 from app.domain.washers.use_cases.list_washers import ListWashers
 from app.domain.washers.use_cases.update_washer import UpdateWasher
 from app.domain.washers.use_cases.delete_washer import DeleteWasher
-from app.application.dto.washers.washer_request import WasherCreateRequest, WasherUpdateRequest
+from app.domain.washers.use_cases.update_all_washers_commission import UpdateAllWashersCommission
+from app.application.dto.washers.washer_request import WasherCreateRequest, WasherUpdateRequest, WasherBulkUpdateCommissionRequest
 from app.application.dto.washers.washer_response import WasherResponse
 
 router = APIRouter(prefix="/washers", tags=["Washers"])
@@ -15,8 +16,16 @@ def get_repo():
     return WasherRepositoryImpl()
 
 
+@router.post("/update-commission-all")
+async def update_all_commission(data: WasherBulkUpdateCommissionRequest, repo=Depends(get_repo)):
+    uc = UpdateAllWashersCommission(repo)
+    await uc.execute(data.percentage)
+    return {"message": "All washers updated successfully", "percentage": data.percentage}
+
+
 @router.post("/", response_model=WasherResponse)
 async def create_washer(data: WasherCreateRequest, repo=Depends(get_repo)):
+
     uc = CreateWasher(repo)
     return await uc.execute(data)
 

@@ -84,3 +84,12 @@ class WasherRepositoryImpl(IWasherRepository):
                 delete(WasherModel).where(WasherModel.id == washer_id)
             )
             await session.commit()
+
+    async def update_all_commission(self, percentage: int):
+        async with SessionLocal() as session:
+            stmt = (
+                update(WasherModel)
+                .values(commission_percentage=percentage)
+            )
+            await session.execute(stmt)
+            await session.commit()

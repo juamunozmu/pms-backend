@@ -14,3 +14,6 @@ class WasherUpdateRequest(BaseModel):
     phone: Optional[str] = None
     commission_percentage: Optional[int] = Field(None, ge=0, le=100)
     is_active: Optional[bool] = None
+
+class WasherBulkUpdateCommissionRequest(BaseModel):
+    percentage: int = Field(..., ge=0, le=100)

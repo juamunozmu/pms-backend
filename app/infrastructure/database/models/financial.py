@@ -132,3 +132,35 @@ class Voucher(Base):
     
     def __repr__(self):
         return f"<Voucher(id={self.id}, number='{self.voucher_number}', amount={self.amount})>"
+
+
+class EmployeeAdvance(Base):
+    """Modelo para vales/préstamos a empleados."""
+    
+    __tablename__ = "employee_advances"
+    
+    # Columnas
+    id = Column(Integer, primary_key=True, index=True)
+    washer_id = Column(Integer, ForeignKey("washers.id", ondelete="RESTRICT"), nullable=False, index=True)
+    total_amount = Column(Integer, nullable=False)  # En centavos
+    number_of_installments = Column(Integer, nullable=False)
+    installment_amount = Column(Integer, nullable=False)  # En centavos
+    remaining_amount = Column(Integer, nullable=False)  # En centavos
+    status = Column(String(20), default="active", index=True)  # active, paid, cancelled
+    description = Column(String(255), nullable=True)
+    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    
+    # Relaciones
+    washer = relationship("Washer", back_populates="advances")
+    
+    # Constraints
+    __table_args__ = (
+        CheckConstraint('total_amount > 0', name='check_advances_total_amount_positive'),
+        CheckConstraint('number_of_installments > 0', name='check_advances_installments_positive'),
+        CheckConstraint('installment_amount > 0', name='check_advances_installment_amount_positive'),
+        CheckConstraint("status IN ('active', 'paid', 'cancelled')", name='check_advances_status_valid'),
+    )
+    
+    def __repr__(self):
+        return f"<EmployeeAdvance(id={self.id}, washer_id={self.washer_id}, remaining={self.remaining_amount})>"

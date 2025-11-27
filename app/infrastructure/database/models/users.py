@@ -76,6 +76,7 @@ class Washer(Base):
     # Relaciones
     washing_services = relationship("WashingService", back_populates="washer", cascade="all, delete-orphan")
     bonuses = relationship("Bonus", back_populates="washer", cascade="all, delete-orphan")
+    advances = relationship("EmployeeAdvance", back_populates="washer", cascade="all, delete-orphan")
     
     # Constraints
     __table_args__ = (

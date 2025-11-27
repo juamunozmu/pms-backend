@@ -1,5 +1,5 @@
 from typing import List, Optional
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, func
 from app.domain.financial.entities.expense import Expense
 from app.domain.financial.repositories.expense_repository import ExpenseRepository
 from app.infrastructure.database.session import SessionLocal
@@ -59,3 +59,12 @@ class ExpenseRepositoryImpl(ExpenseRepository):
             )
             models = result.scalars().all()
             return [self._to_entity(m) for m in models]
+
+    async def get_total_by_shift(self, shift_id: int) -> int:
+        async with SessionLocal() as session:
+            result = await session.execute(
+                select(func.sum(ExpenseModel.amount))
+                .where(ExpenseModel.shift_id == shift_id)
+            )
+            total = result.scalar()
+            return total if total else 0

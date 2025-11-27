@@ -22,3 +22,8 @@ class ExpenseRepository(ABC):
     async def get_all(self, skip: int = 0, limit: int = 100) -> List[Expense]:
         """Obtiene todos los gastos con paginación."""
         pass
+
+    @abstractmethod
+    async def get_total_by_shift(self, shift_id: int) -> int:
+        """Calcula el total de gastos para un turno."""
+        pass

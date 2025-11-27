@@ -32,12 +32,21 @@ app.include_router(auth_routes.router, prefix="/api/v1")
 from app.api.routes.v1.expenses import expense_routes
 app.include_router(expense_routes.router, prefix="/api/v1")
 
+from app.api.routes.v1.shifts import shift_routes
+app.include_router(shift_routes.router, prefix="/api/v1")
+
 # app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 # app.include_router(parking.router, prefix="/api/v1/parking", tags=["Parking"])
 # app.include_router(washing.router, prefix="/api/v1/washing", tags=["Washing"])
 # app.include_router(shifts.router, prefix="/api/v1/shifts", tags=["Shifts"])
 from app.api.routes.v1 import washers
 app.include_router(washers.router, prefix="/api/v1/washing")
+
+from app.api.routes.v1.financial import advance_routes
+app.include_router(advance_routes.router, prefix="/api/v1")
+
+from app.api.routes.v1.financial import bonus_routes
+app.include_router(bonus_routes.router, prefix="/api/v1/bonuses", tags=["Bonuses"])
 
 @app.get("/")
 async def root():

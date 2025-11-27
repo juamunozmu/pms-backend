@@ -24,3 +24,7 @@ class IWasherRepository(ABC):
     @abstractmethod
     async def delete(self, washer_id: int):
         pass
+
+    @abstractmethod
+    async def update_all_commission(self, percentage: int):
+        pass
