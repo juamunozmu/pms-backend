@@ -48,6 +48,9 @@ app.include_router(advance_routes.router, prefix="/api/v1")
 from app.api.routes.v1.financial import bonus_routes
 app.include_router(bonus_routes.router, prefix="/api/v1/bonuses", tags=["Bonuses"])
 
+from app.api.routes.v1.reports import revenue
+app.include_router(revenue.router, prefix="/api/v1/reports")
+
 @app.get("/")
 async def root():
     return {
