@@ -1,4 +1,5 @@
 from typing import List, Optional
+from datetime import date
 from sqlalchemy import select, delete, func
 from app.domain.financial.entities.expense import Expense
 from app.domain.financial.repositories.expense_repository import ExpenseRepository
@@ -68,3 +69,28 @@ class ExpenseRepositoryImpl(ExpenseRepository):
             )
             total = result.scalar()
             return total if total else 0
+
+    async def get_sum_by_date_range(self, start_date: date, end_date: date) -> int:
+        async with SessionLocal() as session:
+            result = await session.execute(
+                select(func.sum(ExpenseModel.amount))
+                .where(ExpenseModel.expense_date >= start_date)
+                .where(ExpenseModel.expense_date <= end_date)
+            )
+            total = result.scalar()
+            return total if total else 0
+
+    async def get_daily_expenses(self, start_date: date, end_date: date) -> List[dict]:
+        async with SessionLocal() as session:
+            stmt = (
+                select(
+                    ExpenseModel.expense_date,
+                    func.sum(ExpenseModel.amount).label('total')
+                )
+                .where(ExpenseModel.expense_date >= start_date)
+                .where(ExpenseModel.expense_date <= end_date)
+                .group_by(ExpenseModel.expense_date)
+                .order_by(ExpenseModel.expense_date)
+            )
+            result = await session.execute(stmt)
+            return [{'date': row.expense_date, 'total': row.total} for row in result]

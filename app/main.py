@@ -51,6 +51,24 @@ app.include_router(bonus_routes.router, prefix="/api/v1/bonuses", tags=["Bonuses
 from app.api.routes.v1.reports import revenue
 app.include_router(revenue.router, prefix="/api/v1/reports")
 
+from app.api.routes.v1.reports import performance
+app.include_router(performance.router, prefix="/api/v1/reports", tags=["Reports"])
+
+from app.api.routes.v1.reports import washing_analytics
+app.include_router(washing_analytics.router, prefix="/api/v1/reports", tags=["Reports"])
+
+from app.api.routes.v1.reports import agreement_reports_routes
+app.include_router(agreement_reports_routes.router, prefix="/api/v1")
+
+from app.api.routes.v1.reports import activity_reports_routes
+app.include_router(activity_reports_routes.router, prefix="/api/v1")
+
+from app.api.routes.v1.reports import occupancy_reports_routes
+app.include_router(occupancy_reports_routes.router, prefix="/api/v1/reports", tags=["Reports"])
+
+from app.api.routes.v1.reports import dashboard_routes
+app.include_router(dashboard_routes.router, prefix="/api/v1/reports", tags=["Reports"])
+
 @app.get("/")
 async def root():
     return {

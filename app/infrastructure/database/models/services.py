@@ -49,6 +49,8 @@ class WashingService(Base):
     admin_id = Column(Integer, ForeignKey("operational_admins.id", ondelete="RESTRICT"), nullable=False, index=True)
     service_type = Column(String(50), nullable=False)  # Básico, Completo, Premium
     service_date = Column(TIMESTAMP(timezone=True), nullable=False, index=True)
+    start_time = Column(TIMESTAMP(timezone=True), nullable=True)
+    end_time = Column(TIMESTAMP(timezone=True), nullable=True)
     price = Column(Integer, nullable=False)  # En centavos
     payment_status = Column(String(20), default="pending")  # pending, paid, cancelled
     notes = Column(String(255), nullable=True)

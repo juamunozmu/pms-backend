@@ -60,7 +60,8 @@ from app.infrastructure.database.models.financial import (
     Shift,
     Expense,
     Bonus,
-    Voucher
+    Voucher,
+    EmployeeAdvance
 )
 
 # Modelos de Sistema y Configuración
@@ -100,6 +101,7 @@ __all__ = [
     "Expense",
     "Bonus",
     "Voucher",
+    "EmployeeAdvance",
     
     # Sistema y Configuración
     "BusinessConfig",

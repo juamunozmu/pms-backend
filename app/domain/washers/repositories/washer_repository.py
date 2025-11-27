@@ -28,3 +28,8 @@ class IWasherRepository(ABC):
     @abstractmethod
     async def update_all_commission(self, percentage: int):
         pass
+
+    @abstractmethod
+    async def count_active(self) -> int:
+        """Cuenta el número de lavadores activos."""
+        pass

@@ -1,4 +1,6 @@
-from sqlalchemy import select, func
+from sqlalchemy import select, func, cast, Date
+from datetime import date
+from typing import List
 from app.domain.washing.repositories.washing_service_repository import WashingServiceRepository
 from app.infrastructure.database.session import SessionLocal
 from app.infrastructure.database.models.services import WashingService as WashingServiceModel
@@ -30,3 +32,29 @@ class WashingServiceRepositoryImpl(WashingServiceRepository):
             )
             total = result.scalar()
             return total if total else 0
+
+    async def get_washing_duration_stats(self, start_date: date, end_date: date) -> List[dict]:
+        async with SessionLocal() as session:
+            stmt = (
+                select(
+                    WashingServiceModel.washer_id,
+                    WashingServiceModel.service_type,
+                    func.avg(WashingServiceModel.end_time - WashingServiceModel.start_time).label("avg_duration"),
+                    func.count(WashingServiceModel.id).label("count")
+                )
+                .where(cast(WashingServiceModel.service_date, Date) >= start_date)
+                .where(cast(WashingServiceModel.service_date, Date) <= end_date)
+                .where(WashingServiceModel.start_time.isnot(None))
+                .where(WashingServiceModel.end_time.isnot(None))
+                .group_by(WashingServiceModel.washer_id, WashingServiceModel.service_type)
+            )
+            result = await session.execute(stmt)
+            return [
+                {
+                    "washer_id": row.washer_id,
+                    "service_type": row.service_type,
+                    "avg_duration": row.avg_duration, # This will be a timedelta
+                    "count": row.count
+                }
+                for row in result
+            ]

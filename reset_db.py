@@ -22,6 +22,7 @@ async def main():
         await conn.execute(text("DROP SCHEMA public CASCADE"))
         await conn.execute(text("CREATE SCHEMA public"))
         await conn.execute(text("GRANT ALL ON SCHEMA public TO public"))
+        await conn.execute(text("GRANT ALL ON SCHEMA public TO postgres"))
     print("All tables dropped (Schema public recreated).")
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 from app.domain.financial.entities.expense import Expense
+from datetime import date
 
 class ExpenseRepository(ABC):
     @abstractmethod
@@ -26,4 +27,16 @@ class ExpenseRepository(ABC):
     @abstractmethod
     async def get_total_by_shift(self, shift_id: int) -> int:
         """Calcula el total de gastos para un turno."""
+        pass
+
+    @abstractmethod
+    async def get_sum_by_date_range(self, start_date: date, end_date: date) -> int:
+        """Calcula la suma de gastos en un rango de fechas."""
+        pass
+
+    @abstractmethod
+    async def get_daily_expenses(self, start_date: date, end_date: date) -> List[dict]:
+        """Obtiene los gastos agrupados por día en un rango de fechas.
+        Retorna lista de dicts: {'date': date, 'total': int}
+        """
         pass

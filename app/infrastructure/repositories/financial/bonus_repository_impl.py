@@ -43,3 +43,28 @@ class BonusRepositoryImpl(BonusRepository):
             )
             
             return [{"washer_id": row.washer_id, "total_amount": row.total_amount} for row in result]
+
+    async def get_sum_by_date_range(self, start_date: date, end_date: date) -> int:
+        async with SessionLocal() as session:
+            result = await session.execute(
+                select(func.sum(Bonus.amount))
+                .where(Bonus.bonus_date >= start_date)
+                .where(Bonus.bonus_date <= end_date)
+            )
+            total = result.scalar()
+            return total if total else 0
+
+    async def get_daily_bonuses(self, start_date: date, end_date: date) -> List[dict]:
+        async with SessionLocal() as session:
+            stmt = (
+                select(
+                    Bonus.bonus_date,
+                    func.sum(Bonus.amount).label('total')
+                )
+                .where(Bonus.bonus_date >= start_date)
+                .where(Bonus.bonus_date <= end_date)
+                .group_by(Bonus.bonus_date)
+                .order_by(Bonus.bonus_date)
+            )
+            result = await session.execute(stmt)
+            return [{'date': row.bonus_date, 'total': row.total} for row in result]

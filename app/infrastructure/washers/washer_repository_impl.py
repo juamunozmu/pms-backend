@@ -1,5 +1,5 @@
 from typing import List, Optional
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update, delete, func
 
 from app.domain.washers.entities.washer import Washer
 from app.domain.washers.repositories.washer_repository import IWasherRepository
@@ -93,3 +93,10 @@ class WasherRepositoryImpl(IWasherRepository):
             )
             await session.execute(stmt)
             await session.commit()
+
+    async def count_active(self) -> int:
+        async with SessionLocal() as session:
+            result = await session.execute(
+                select(func.count(WasherModel.id)).where(WasherModel.is_active == True)
+            )
+            return result.scalar() or 0
