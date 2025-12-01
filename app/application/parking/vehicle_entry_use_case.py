@@ -37,8 +37,9 @@ class VehicleEntryUseCase:
         helmet_count: int = 0
     ) -> ParkingRecord:
         # ... (previous code for normalization and vehicle creation/check) ...
-        # Normalize plate to uppercase
+        # Normalize plate to uppercase and vehicle_type to lowercase
         plate = plate.upper().strip()
+        vehicle_type = vehicle_type.lower().strip()
         
         # Check if vehicle exists, if not create it
         vehicle = await self.vehicle_repo.get_by_plate(plate)
@@ -70,8 +71,8 @@ class VehicleEntryUseCase:
         subscription_id = active_subscription.id if active_subscription else None
 
         # Get the appropriate rate for this vehicle type
-        # Default to "Hora" (hourly) rate type
-        rate = await self.rate_repo.get_active_by_type(vehicle_type, "Hora")
+        # Default to "hour" (hourly) rate type
+        rate = await self.rate_repo.get_active_by_type(vehicle_type, "hour")
         if not rate:
             raise ValueError(f"No active rate found for vehicle type: {vehicle_type}")
         

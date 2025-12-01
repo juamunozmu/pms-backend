@@ -71,4 +71,11 @@ class CreateWashingServiceUseCase:
             notes=notes
         )
         
-        return await self.washing_repo.create(service)
+        created_service = await self.washing_repo.create(service)
+        
+        # Update parking record to link to this washing service
+        if active_record:
+            active_record.washing_service_id = created_service.id
+            await self.parking_record_repo.update(active_record.id, active_record)
+        
+        return created_service

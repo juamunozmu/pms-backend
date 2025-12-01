@@ -29,9 +29,15 @@ class WashingServiceConfig:
     
     @classmethod
     def get_free_minutes(cls, vehicle_type: str, service_name: str) -> int:
-        """Get free parking minutes for a specific vehicle type and service"""
+        """Get free parking minutes for a specific vehicle type and service (case-insensitive)"""
         vehicle_config = cls._FREE_MINUTES.get(vehicle_type.lower())
         if not vehicle_config:
             return 0
             
-        return vehicle_config.get(service_name, 0)
+        # Case-insensitive lookup for service name
+        service_name_lower = service_name.lower()
+        for name, minutes in vehicle_config.items():
+            if name.lower() == service_name_lower:
+                return minutes
+                
+        return 0

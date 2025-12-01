@@ -16,12 +16,17 @@ class ManageRatesUseCase:
         description: Optional[str] = None,
         is_active: bool = True
     ) -> Rate:
+        # Normalize inputs
+        vehicle_type = vehicle_type.lower().strip()
+        rate_type = rate_type.lower().strip()
+        
         # Check if rate already exists for this type combination
-        existing = await self.rate_repo.get_active_by_type(vehicle_type, rate_type)
-        if existing and is_active:
-            # If we are creating an active rate, we might want to deactivate the old one or raise error
-            # For now, let's allow multiple but maybe warn? Or just create.
-            pass
+        if is_active:
+            existing = await self.rate_repo.get_active_by_type(vehicle_type, rate_type)
+            if existing:
+                # Deactivate the existing rate to avoid conflicts
+                existing.is_active = False
+                await self.rate_repo.update(existing.id, existing)
             
         rate = Rate(
             id=None,
