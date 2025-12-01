@@ -3,7 +3,7 @@ from app.domain.financial.entities.shift import Shift
 from app.domain.financial.repositories.shift_repository import ShiftRepository
 from app.domain.financial.repositories.expense_repository import ExpenseRepository
 from app.domain.washing.repositories.washing_service_repository import WashingServiceRepository
-from app.domain.parking.repositories.parking_record_repository import ParkingRecordRepository
+from app.domain.parking.repositories.parking_record_repository import IParkingRecordRepository
 
 class CloseShift:
     def __init__(
@@ -11,7 +11,7 @@ class CloseShift:
         shift_repository: ShiftRepository,
         expense_repository: ExpenseRepository,
         washing_repository: WashingServiceRepository,
-        parking_repository: ParkingRecordRepository
+        parking_repository: IParkingRecordRepository
     ):
         self.shift_repository = shift_repository
         self.expense_repository = expense_repository

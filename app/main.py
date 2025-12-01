@@ -36,9 +36,12 @@ from app.api.routes.v1.shifts import shift_routes
 app.include_router(shift_routes.router, prefix="/api/v1")
 
 # app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
-# app.include_router(parking.router, prefix="/api/v1/parking", tags=["Parking"])
 # app.include_router(washing.router, prefix="/api/v1/washing", tags=["Washing"])
 # app.include_router(shifts.router, prefix="/api/v1/shifts", tags=["Shifts"])
+
+from app.api.routes.v1.parking import parking_routes
+app.include_router(parking_routes.router, prefix="/api/v1")
+
 from app.api.routes.v1 import washers
 app.include_router(washers.router, prefix="/api/v1/washing")
 
