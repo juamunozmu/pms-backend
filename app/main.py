@@ -58,6 +58,10 @@ app.include_router(notification_routes.router, prefix="/api/v1")
 from app.api.routes.v1 import washers
 app.include_router(washers.router, prefix="/api/v1")
 
+from app.api.routes.v1.users import employee_routes
+app.include_router(employee_routes.router, prefix="/api/v1")
+
+
 from app.api.routes.v1.financial import advance_routes
 app.include_router(advance_routes.router, prefix="/api/v1")
 
