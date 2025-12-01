@@ -5,7 +5,7 @@ from app.domain.parking.entities.parking_record import ParkingRecord
 from app.domain.parking.repositories.vehicle_repository import IVehicleRepository
 from app.domain.parking.repositories.parking_record_repository import IParkingRecordRepository
 from app.domain.parking.repositories.rate_repository import IRateRepository
-
+from app.domain.subscriptions.repositories.subscription_repository import ISubscriptionRepository
 
 class VehicleEntryUseCase:
     """Use case for registering vehicle entry to parking"""
@@ -14,11 +14,13 @@ class VehicleEntryUseCase:
         self,
         vehicle_repo: IVehicleRepository,
         parking_record_repo: IParkingRecordRepository,
-        rate_repo: IRateRepository
+        rate_repo: IRateRepository,
+        subscription_repo: ISubscriptionRepository
     ):
         self.vehicle_repo = vehicle_repo
         self.parking_record_repo = parking_record_repo
         self.rate_repo = rate_repo
+        self.subscription_repo = subscription_repo
     
     async def execute(
         self,
@@ -34,28 +36,7 @@ class VehicleEntryUseCase:
         notes: Optional[str] = None,
         helmet_count: int = 0
     ) -> ParkingRecord:
-        """
-        Register a vehicle entry to the parking lot.
-        
-        Args:
-            plate: Vehicle license plate
-            vehicle_type: Type of vehicle (Moto, Carro, etc.)
-            owner_name: Name of the vehicle owner
-            shift_id: ID of the current shift
-            admin_id: ID of the admin registering the entry
-            owner_phone: Optional phone number
-            brand: Optional vehicle brand
-            model: Optional vehicle model
-            color: Optional vehicle color
-            notes: Optional notes
-            helmet_count: Number of helmets (for motorcycles)
-            
-        Returns:
-            Created ParkingRecord
-            
-        Raises:
-            ValueError: If vehicle already has an active parking record
-        """
+        # ... (previous code for normalization and vehicle creation/check) ...
         # Normalize plate to uppercase
         plate = plate.upper().strip()
         
@@ -83,6 +64,11 @@ class VehicleEntryUseCase:
             if active_record:
                 raise ValueError(f"Vehicle {plate} already has an active parking record")
         
+        # Check for active subscription
+        from datetime import date
+        active_subscription = await self.subscription_repo.get_active_by_vehicle_id(vehicle.id, date.today())
+        subscription_id = active_subscription.id if active_subscription else None
+
         # Get the appropriate rate for this vehicle type
         # Default to "Hora" (hourly) rate type
         rate = await self.rate_repo.get_active_by_type(vehicle_type, "Hora")
@@ -104,7 +90,7 @@ class VehicleEntryUseCase:
             entry_time=datetime.now(timezone.utc),
             parking_rate_id=rate.id,
             exit_time=None,
-            subscription_id=None,
+            subscription_id=subscription_id,
             washing_service_id=None,
             helmet_count=helmet_count,
             helmet_charge=helmet_charge,

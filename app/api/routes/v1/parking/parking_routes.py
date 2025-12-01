@@ -15,12 +15,15 @@ from app.infrastructure.database.models.users import OperationalAdmin
 router = APIRouter(prefix="/parking", tags=["Parking"])
 
 
+from app.infrastructure.repositories.subscriptions.subscription_repository_impl import SubscriptionRepositoryImpl
+
 # Dependency to get repositories and use cases
 def get_vehicle_entry_use_case() -> VehicleEntryUseCase:
     vehicle_repo = VehicleRepositoryImpl()
     parking_record_repo = ParkingRecordRepositoryImpl()
     rate_repo = RateRepositoryImpl()
-    return VehicleEntryUseCase(vehicle_repo, parking_record_repo, rate_repo)
+    subscription_repo = SubscriptionRepositoryImpl()
+    return VehicleEntryUseCase(vehicle_repo, parking_record_repo, rate_repo, subscription_repo)
 
 
 def get_vehicle_exit_use_case() -> VehicleExitUseCase:
