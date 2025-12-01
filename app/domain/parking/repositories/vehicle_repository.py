@@ -12,5 +12,9 @@ class IVehicleRepository(ABC):
         pass
 
     @abstractmethod
+    async def get_by_id(self, vehicle_id: int) -> Optional[Vehicle]:
+        pass
+
+    @abstractmethod
     async def update(self, vehicle_id: int, vehicle: Vehicle) -> Vehicle:
         pass

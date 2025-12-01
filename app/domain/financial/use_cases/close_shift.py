@@ -2,7 +2,7 @@ from datetime import datetime
 from app.domain.financial.entities.shift import Shift
 from app.domain.financial.repositories.shift_repository import ShiftRepository
 from app.domain.financial.repositories.expense_repository import ExpenseRepository
-from app.domain.washing.repositories.washing_service_repository import WashingServiceRepository
+from app.domain.washing.repositories.washing_service_repository import IWashingServiceRepository
 from app.domain.parking.repositories.parking_record_repository import IParkingRecordRepository
 
 class CloseShift:
@@ -10,7 +10,7 @@ class CloseShift:
         self, 
         shift_repository: ShiftRepository,
         expense_repository: ExpenseRepository,
-        washing_repository: WashingServiceRepository,
+        washing_repository: IWashingServiceRepository,
         parking_repository: IParkingRecordRepository
     ):
         self.shift_repository = shift_repository

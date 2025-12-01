@@ -42,8 +42,11 @@ app.include_router(shift_routes.router, prefix="/api/v1")
 from app.api.routes.v1.parking import parking_routes
 app.include_router(parking_routes.router, prefix="/api/v1")
 
+from app.api.routes.v1.washing import washing_routes
+app.include_router(washing_routes.router, prefix="/api/v1/washing")
+
 from app.api.routes.v1 import washers
-app.include_router(washers.router, prefix="/api/v1/washing")
+app.include_router(washers.router, prefix="/api/v1")
 
 from app.api.routes.v1.financial import advance_routes
 app.include_router(advance_routes.router, prefix="/api/v1")

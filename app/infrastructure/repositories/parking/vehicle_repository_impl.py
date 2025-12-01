@@ -45,6 +45,14 @@ class VehicleRepositoryImpl(IVehicleRepository):
             model = result.scalar_one_or_none()
             return self._to_entity(model)
 
+    async def get_by_id(self, vehicle_id: int) -> Optional[Vehicle]:
+        async with SessionLocal() as session:
+            result = await session.execute(
+                select(VehicleModel).where(VehicleModel.id == vehicle_id)
+            )
+            model = result.scalar_one_or_none()
+            return self._to_entity(model)
+
     async def create(self, vehicle: Vehicle) -> Vehicle:
         async with SessionLocal() as session:
             model = self._to_model(vehicle)
