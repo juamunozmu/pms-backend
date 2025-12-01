@@ -1,6 +1,6 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
-from app.infrastructure.washers.washer_repository_impl import WasherRepositoryImpl
+from app.infrastructure.repositories.washers.washer_repository_impl import WasherRepositoryImpl
 from app.domain.washers.use_cases.create_washer import CreateWasher
 from app.domain.washers.use_cases.get_washer import GetWasher
 from app.domain.washers.use_cases.list_washers import ListWashers
