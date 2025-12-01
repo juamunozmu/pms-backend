@@ -12,7 +12,7 @@ from app.domain.reporting.services.washing_analytics_service import WashingAnaly
 from app.infrastructure.repositories.financial.expense_repository_impl import ExpenseRepositoryImpl
 from app.infrastructure.repositories.financial.bonus_repository_impl import BonusRepositoryImpl
 from app.infrastructure.repositories.reporting.occupancy_reporting_repository_impl import OccupancyReportingRepositoryImpl
-from app.infrastructure.washers.washer_repository_impl import WasherRepositoryImpl
+from app.infrastructure.repositories.washers.washer_repository_impl import WasherRepositoryImpl
 from app.infrastructure.repositories.washing.washing_service_repository_impl import WashingServiceRepositoryImpl
 
 from app.application.dto.reporting.dashboard_response import DashboardMetricsResponse
