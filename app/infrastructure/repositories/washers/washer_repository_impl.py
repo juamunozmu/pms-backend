@@ -95,3 +95,11 @@ class WasherRepositoryImpl(IWasherRepository):
                 select(func.count(WasherModel.id)).where(WasherModel.is_active == True)
             )
             return result.scalar()
+
+    async def get_by_email(self, email: str) -> Optional[Washer]:
+        async with SessionLocal() as session:
+            result = await session.execute(
+                select(WasherModel).where(WasherModel.email == email)
+            )
+            model = result.scalar_one_or_none()
+            return self._to_entity(model)
