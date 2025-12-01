@@ -16,6 +16,7 @@ router = APIRouter(prefix="/parking", tags=["Parking"])
 
 
 from app.infrastructure.repositories.subscriptions.subscription_repository_impl import SubscriptionRepositoryImpl
+from app.infrastructure.repositories.agreements.agreement_repository_impl import AgreementRepositoryImpl
 
 # Dependency to get repositories and use cases
 def get_vehicle_entry_use_case() -> VehicleEntryUseCase:
@@ -30,7 +31,9 @@ def get_vehicle_exit_use_case() -> VehicleExitUseCase:
     vehicle_repo = VehicleRepositoryImpl()
     parking_record_repo = ParkingRecordRepositoryImpl()
     rate_repo = RateRepositoryImpl()
-    return VehicleExitUseCase(vehicle_repo, parking_record_repo, rate_repo)
+    subscription_repo = SubscriptionRepositoryImpl()
+    agreement_repo = AgreementRepositoryImpl()
+    return VehicleExitUseCase(vehicle_repo, parking_record_repo, rate_repo, subscription_repo, agreement_repo)
 
 
 @router.post("/entry", status_code=status.HTTP_201_CREATED)
