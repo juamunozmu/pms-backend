@@ -51,6 +51,9 @@ app.include_router(subscription_routes.router, prefix="/api/v1")
 from app.api.routes.v1.agreements import agreement_routes
 app.include_router(agreement_routes.router, prefix="/api/v1")
 
+from app.api.routes.v1.notifications import notification_routes
+app.include_router(notification_routes.router, prefix="/api/v1")
+
 from app.api.routes.v1 import washers
 app.include_router(washers.router, prefix="/api/v1")
 
