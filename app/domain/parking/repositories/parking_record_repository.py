@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
+from datetime import date # Added import for date
 from app.domain.parking.entities.parking_record import ParkingRecord
 
 class IParkingRecordRepository(ABC):

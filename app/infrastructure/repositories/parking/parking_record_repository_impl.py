@@ -1,5 +1,6 @@
 from typing import Optional, List
-from sqlalchemy import select, update
+from datetime import date
+from sqlalchemy import select, update, func
 from app.domain.parking.entities.parking_record import ParkingRecord
 from app.domain.parking.repositories.parking_record_repository import IParkingRecordRepository
 from app.infrastructure.database.session import SessionLocal
@@ -100,6 +101,30 @@ class ParkingRecordRepositoryImpl(IParkingRecordRepository):
             result = await session.execute(
                 select(ParkingRecordModel)
                 .where(ParkingRecordModel.exit_time.is_(None))
+            )
+            models = result.scalars().all()
+            return [self._to_entity(m) for m in models]
+
+    async def list_by_date_range(self, start_date: date, end_date: date) -> List[ParkingRecord]:
+        async with SessionLocal() as session:
+            # Filter by entry_time within the date range
+            # We cast entry_time to date for comparison
+            result = await session.execute(
+                select(ParkingRecordModel)
+                .where(func.date(ParkingRecordModel.entry_time) >= start_date)
+                .where(func.date(ParkingRecordModel.entry_time) <= end_date)
+                .order_by(ParkingRecordModel.entry_time.desc())
+            )
+            models = result.scalars().all()
+            return [self._to_entity(m) for m in models]
+
+    async def get_last_by_vehicle_id(self, vehicle_id: int, limit: int = 5) -> List[ParkingRecord]:
+        async with SessionLocal() as session:
+            result = await session.execute(
+                select(ParkingRecordModel)
+                .where(ParkingRecordModel.vehicle_id == vehicle_id)
+                .order_by(ParkingRecordModel.entry_time.desc())
+                .limit(limit)
             )
             models = result.scalars().all()
             return [self._to_entity(m) for m in models]

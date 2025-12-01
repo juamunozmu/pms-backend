@@ -39,8 +39,9 @@ app.include_router(shift_routes.router, prefix="/api/v1")
 # app.include_router(washing.router, prefix="/api/v1/washing", tags=["Washing"])
 # app.include_router(shifts.router, prefix="/api/v1/shifts", tags=["Shifts"])
 
-from app.api.routes.v1.parking import parking_routes
+from app.api.routes.v1.parking import parking_routes, rate_routes
 app.include_router(parking_routes.router, prefix="/api/v1")
+app.include_router(rate_routes.router, prefix="/api/v1/parking")
 
 from app.api.routes.v1.washing import washing_routes
 app.include_router(washing_routes.router, prefix="/api/v1/washing")
@@ -86,6 +87,9 @@ app.include_router(dashboard_routes.router, prefix="/api/v1/reports", tags=["Rep
 
 from app.api.routes.v1.reports import summary_stats_routes
 app.include_router(summary_stats_routes.router, prefix="/api/v1/reports")
+
+from app.api.routes.v1.reports import export_routes
+app.include_router(export_routes.router, prefix="/api/v1/reports")
 
 @app.get("/")
 async def root():

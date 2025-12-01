@@ -2,10 +2,12 @@ from datetime import datetime, timezone, date
 from typing import Optional
 from app.domain.parking.entities.parking_record import ParkingRecord
 from app.domain.parking.repositories.vehicle_repository import IVehicleRepository
+from app.core.washing_config import WashingServiceConfig
 from app.domain.parking.repositories.parking_record_repository import IParkingRecordRepository
 from app.domain.parking.repositories.rate_repository import IRateRepository
 from app.domain.subscriptions.repositories.subscription_repository import ISubscriptionRepository
 from app.domain.agreements.repositories.agreement_repository import IAgreementRepository
+from app.domain.washing.repositories.washing_service_repository import IWashingServiceRepository
 
 
 class VehicleExitUseCase:
@@ -17,13 +19,15 @@ class VehicleExitUseCase:
         parking_record_repo: IParkingRecordRepository,
         rate_repo: IRateRepository,
         subscription_repo: ISubscriptionRepository,
-        agreement_repo: IAgreementRepository
+        agreement_repo: IAgreementRepository,
+        washing_repo: IWashingServiceRepository
     ):
         self.vehicle_repo = vehicle_repo
         self.parking_record_repo = parking_record_repo
         self.rate_repo = rate_repo
         self.subscription_repo = subscription_repo
         self.agreement_repo = agreement_repo
+        self.washing_repo = washing_repo
     
     async def execute(
         self,
@@ -35,8 +39,9 @@ class VehicleExitUseCase:
         
         Pricing logic:
         1. If vehicle has active subscription: parking cost = 0 (only charge helmets)
-        2. If vehicle has agreement: apply discount or special rate
-        3. Otherwise: apply standard hourly rate
+        2. If washing service linked: apply free parking minutes
+        3. If vehicle has agreement: apply discount or special rate
+        4. Otherwise: apply standard hourly rate
         
         Args:
             plate: Vehicle license plate
@@ -65,13 +70,33 @@ class VehicleExitUseCase:
         exit_time = datetime.now(timezone.utc)
         parking_record.exit_time = exit_time
         
-        # Calculate parking duration in hours (rounded up)
+        # Calculate parking duration in minutes
         duration = exit_time - parking_record.entry_time
-        hours = duration.total_seconds() / 3600
+        minutes_total = duration.total_seconds() / 60
         
-        # Round up to nearest hour (minimum 1 hour)
+        # Check for free parking minutes from washing service
+        free_minutes = 0
+        if parking_record.washing_service_id:
+            washing_service = await self.washing_repo.get_by_id(parking_record.washing_service_id)
+            if washing_service:
+                # Get free minutes from config
+                free_minutes = WashingServiceConfig.get_free_minutes(
+                    vehicle.vehicle_type,
+                    washing_service.service_type
+                )
+        
+        # Apply free minutes
+        billable_minutes = max(0, minutes_total - free_minutes)
+        
+        # Convert to hours (rounded up)
         import math
-        hours_rounded = max(1, math.ceil(hours))
+        hours_rounded = max(1, math.ceil(billable_minutes / 60))
+        
+        # If billable minutes is 0 (covered by free time), cost should be 0?
+        # Rule: "La tarifa mínima es de 1 minuto." -> If billable > 0, min 1 hour charge usually.
+        # But if fully covered by free time, it should be 0.
+        if billable_minutes == 0:
+            hours_rounded = 0
         
         # Initialize parking cost
         parking_cost = 0

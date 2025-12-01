@@ -19,6 +19,16 @@ class RateRepositoryImpl(IRateRepository):
             is_active=model.is_active
         )
 
+    def _to_model(self, entity: Rate) -> RateModel:
+        return RateModel(
+            id=entity.id,
+            vehicle_type=entity.vehicle_type,
+            rate_type=entity.rate_type,
+            price=entity.price,
+            description=entity.description,
+            is_active=entity.is_active
+        )
+
     async def get_active_by_type(self, vehicle_type: str, rate_type: str) -> Optional[Rate]:
         async with SessionLocal() as session:
             result = await session.execute(
@@ -45,3 +55,43 @@ class RateRepositoryImpl(IRateRepository):
             )
             models = result.scalars().all()
             return [self._to_entity(m) for m in models]
+
+    async def create(self, rate: Rate) -> Rate:
+        async with SessionLocal() as session:
+            model = self._to_model(rate)
+            session.add(model)
+            await session.commit()
+            await session.refresh(model)
+            return self._to_entity(model)
+
+    async def update(self, rate_id: int, rate: Rate) -> Rate:
+        async with SessionLocal() as session:
+            from sqlalchemy import update
+            stmt = (
+                update(RateModel)
+                .where(RateModel.id == rate_id)
+                .values(
+                    vehicle_type=rate.vehicle_type,
+                    rate_type=rate.rate_type,
+                    price=rate.price,
+                    description=rate.description,
+                    is_active=rate.is_active
+                )
+            )
+            await session.execute(stmt)
+            await session.commit()
+            
+            result = await session.execute(
+                select(RateModel).where(RateModel.id == rate_id)
+            )
+            model = result.scalar_one()
+            return self._to_entity(model)
+
+    async def delete(self, rate_id: int) -> bool:
+        async with SessionLocal() as session:
+            from sqlalchemy import delete
+            await session.execute(
+                delete(RateModel).where(RateModel.id == rate_id)
+            )
+            await session.commit()
+            return True

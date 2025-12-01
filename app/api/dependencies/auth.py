@@ -84,3 +84,6 @@ async def get_current_operational_admin(token: str = Depends(oauth2_scheme_opera
         )
     
     return user
+
+# Alias for clarity
+get_current_global_admin = get_current_user
