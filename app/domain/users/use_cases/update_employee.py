@@ -128,6 +128,7 @@ class UpdateEmployee:
             
         updated_washer = await self.washer_repo.update(employee_id, washer)
         
+        from datetime import datetime
         return EmployeeResponse(
             id=updated_washer.id,
             full_name=updated_washer.full_name,
@@ -135,11 +136,7 @@ class UpdateEmployee:
             phone=updated_washer.phone,
             role='washer',
             is_active=updated_washer.is_active,
-            created_at=updated_washer.created_at, # Note: Washer entity might not have created_at in some versions, checking repo... repo returns entity which has it?
-            # Checking Washer entity definition in repo: 
-            # Washer entity in repo: id, full_name, email, phone, commission_percentage, is_active, password_hash.
-            # It seems Washer entity might NOT have created_at.
-            # Let's check Washer entity definition.
+            created_at=datetime.now().isoformat(),  # Washer entity doesn't have created_at, using current time
             commission_percentage=updated_washer.commission_percentage
         )
 

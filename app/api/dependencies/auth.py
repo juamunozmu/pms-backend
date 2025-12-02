@@ -85,5 +85,41 @@ async def get_current_operational_admin(token: str = Depends(oauth2_scheme_opera
     
     return user
 
+async def get_current_admin(token: str = Depends(oauth2_scheme)):
+    """Get the current authenticated admin (global or operational)"""
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub")
+        user_role: str = payload.get("role")
+        
+        if user_id is None:
+            raise credentials_exception
+            
+        if user_role not in ["global_admin", "operational_admin"]:
+             raise credentials_exception
+             
+    except (JWTError, ValidationError):
+        raise credentials_exception
+
+    if user_role == "global_admin":
+        repo = GlobalAdminRepositoryImpl()
+    else:
+        repo = OperationalAdminRepositoryImpl()
+        
+    try:
+        user = await repo.get_by_id(int(user_id))
+    except ValueError:
+        raise credentials_exception
+        
+    if user is None:
+        raise credentials_exception
+        
+    return user
+
 # Alias for clarity
 get_current_global_admin = get_current_user

@@ -6,8 +6,10 @@ from app.infrastructure.repositories.washers.washer_repository_impl import Washe
 from app.domain.users.use_cases.list_all_employees import ListAllEmployees
 from app.domain.users.use_cases.create_employee import CreateEmployee
 from app.domain.users.use_cases.delete_employee import DeleteEmployee
+from app.domain.users.use_cases.update_employee import UpdateEmployee
 from app.application.dto.users.employee_response import EmployeeResponse
 from app.application.dto.users.employee_create_request import EmployeeCreateRequest
+from app.application.dto.users.employee_update_request import EmployeeUpdateRequest
 
 router = APIRouter(prefix="/users/employees", tags=["Employees"])
 
@@ -75,3 +77,22 @@ async def delete_employee(
     except Exception as e:
         print(f"DEBUG: Error deleting employee: {str(e)}")
         raise e
+
+
+@router.put("/{employee_id}", response_model=EmployeeResponse)
+async def update_employee(
+    employee_id: int,
+    role: str,  # 'global_admin', 'operational_admin', 'washer'
+    data: EmployeeUpdateRequest,
+    global_admin_repo: GlobalAdminRepositoryImpl = Depends(get_global_admin_repo),
+    operational_admin_repo: OperationalAdminRepositoryImpl = Depends(get_operational_admin_repo),
+    washer_repo: WasherRepositoryImpl = Depends(get_washer_repo)
+):
+    """
+    Actualiza un empleado del sistema.
+    
+    Query params:
+    - role: Rol del empleado a actualizar ('global_admin', 'operational_admin', 'washer')
+    """
+    uc = UpdateEmployee(global_admin_repo, operational_admin_repo, washer_repo)
+    return await uc.execute(employee_id, role, data)
